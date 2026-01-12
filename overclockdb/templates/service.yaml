@@ -1,0 +1,38 @@
+# Headless service for StatefulSet (required for pod DNS)
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "overclockdb.fullname" . }}-headless
+  labels:
+    {{- include "overclockdb.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "overclockdb.selectorLabels" . | nindent 4 }}
+---
+# Client-facing service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "overclockdb.fullname" . }}
+  labels:
+    {{- include "overclockdb.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "overclockdb.selectorLabels" . | nindent 4 }}

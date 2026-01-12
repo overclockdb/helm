@@ -1,0 +1,112 @@
+# Default values for overclockdb
+
+replicaCount: 1
+
+image:
+  repository: overclockdb
+  tag: ""  # Defaults to Chart appVersion
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  type: ClusterIP
+  port: 8108
+  annotations: {}
+
+# OverclockDB configuration
+overclockdb:
+  port: 8108
+  dataDir: /data
+  persistence: true
+  logLevel: info
+
+# Persistence configuration (StatefulSet volumeClaimTemplates)
+persistence:
+  enabled: true
+  storageClass: ""
+  size: 10Gi
+  accessMode: ReadWriteOnce
+  annotations: {}
+
+# PostgreSQL sync configuration (optional)
+postgres:
+  enabled: false
+  # Connection URL (use existingSecret for production)
+  url: ""
+  table: ""
+  collection: ""
+  primaryKey: "id"
+  batchSize: 1000
+  # Use existing secret for credentials
+  existingSecret: ""
+  existingSecretKey: "postgres-url"
+
+# Resource limits and requests
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "500m"
+  limits:
+    memory: "2Gi"
+    cpu: "2000m"
+
+# Health probes
+probes:
+  liveness:
+    enabled: true
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readiness:
+    enabled: true
+    path: /ready
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity rules
+affinity: {}
+
+# Extra environment variables
+extraEnv: []
+# - name: EXTRA_VAR
+#   value: "value"
+
+# Extra volume mounts
+extraVolumeMounts: []
+
+# Extra volumes
+extraVolumes: []

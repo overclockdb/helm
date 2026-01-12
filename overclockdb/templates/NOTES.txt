@@ -1,0 +1,45 @@
+OverclockDB has been deployed!
+
+1. Get the application URL:
+{{- if contains "NodePort" .Values.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "overclockdb.fullname" . }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo "OverclockDB URL: http://$NODE_IP:$NODE_PORT"
+{{- else if contains "LoadBalancer" .Values.service.type }}
+  NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+  Watch status with: kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "overclockdb.fullname" . }}
+
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "overclockdb.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo "OverclockDB URL: http://$SERVICE_IP:{{ .Values.service.port }}"
+{{- else if contains "ClusterIP" .Values.service.type }}
+  kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "overclockdb.fullname" . }} {{ .Values.service.port }}:{{ .Values.service.port }}
+  echo "OverclockDB URL: http://127.0.0.1:{{ .Values.service.port }}"
+{{- end }}
+
+2. Check health:
+  curl http://localhost:{{ .Values.service.port }}/health
+
+3. API Endpoints:
+  - Health:      GET  /health
+  - Readiness:   GET  /ready
+  - Collections: POST /api/v1/collections
+  - Documents:   POST /api/v1/collections/{name}/docs
+  - Search:      POST /api/v1/collections/{name}/search
+
+4. Example usage:
+  # Create a collection
+  curl -X POST http://localhost:{{ .Values.service.port }}/api/v1/collections \
+    -H "Content-Type: application/json" \
+    -d '{"name": "products", "fields": [{"name": "title", "type": "string"}, {"name": "price", "type": "float"}]}'
+
+  # Add a document
+  curl -X POST http://localhost:{{ .Values.service.port }}/api/v1/collections/products/docs \
+    -H "Content-Type: application/json" \
+    -d '{"id": "1", "title": "Laptop", "price": 999.99}'
+
+  # Search
+  curl -X POST http://localhost:{{ .Values.service.port }}/api/v1/collections/products/search \
+    -H "Content-Type: application/json" \
+    -d '{"q": "laptop"}'
+
+For more information, visit: https://github.com/yourusername/overclockdb
