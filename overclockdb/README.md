@@ -49,8 +49,8 @@ kubectl delete pvc -l app.kubernetes.io/name=overclockdb
 | `image.tag` | Image tag | `""` (uses appVersion) |
 | `image.pullPolicy` | Image pull policy | `IfNotPresent` |
 | `service.type` | Service type | `ClusterIP` |
-| `service.port` | Service port | `8108` |
-| `overclockdb.port` | Application port | `8108` |
+| `service.port` | Service port | `8190` |
+| `overclockdb.port` | Application port | `8190` |
 | `overclockdb.dataDir` | Data directory path | `/data` |
 | `overclockdb.persistence` | Enable data persistence | `true` |
 | `overclockdb.logLevel` | Log level (RUST_LOG) | `info` |
@@ -172,8 +172,8 @@ kubectl get pvc -l app.kubernetes.io/name=overclockdb
 kubectl logs overclockdb-0
 
 # Check health
-kubectl exec -it overclockdb-0 -- curl localhost:8108/health
+kubectl exec -it overclockdb-0 -- curl localhost:8190/health
 
 # Port forward for local access
-kubectl port-forward svc/overclockdb 8108:8108
+kubectl port-forward svc/overclockdb 8190:8190
 ```

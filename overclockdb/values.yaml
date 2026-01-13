@@ -34,12 +34,12 @@ securityContext:
 
 service:
   type: ClusterIP
-  port: 8108
+  port: 8190
   annotations: {}
 
 # OverclockDB configuration
 overclockdb:
-  port: 8108
+  port: 8190
   dataDir: /data
   persistence: true
   logLevel: info
