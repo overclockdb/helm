@@ -68,11 +68,11 @@ postgres:
 # Resource limits and requests
 resources:
   requests:
-    memory: "512Mi"
-    cpu: "500m"
-  limits:
     memory: "2Gi"
-    cpu: "2000m"
+    cpu: "1000m"
+  limits:
+    memory: "16Gi"
+    cpu: "4000m"
 
 # Health probes
 probes:
